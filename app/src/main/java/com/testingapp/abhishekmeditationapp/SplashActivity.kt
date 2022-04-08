@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import com.airbnb.lottie.LottieDrawable
 import com.google.firebase.auth.FirebaseAuth
@@ -14,14 +13,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_splash.*
 
-class SplashActivity : AppCompatActivity(), View.OnClickListener {
+class SplashActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        exclamation_view.setOnClickListener(this)
         setUpAnimation()
         auth = Firebase.auth
         val updateHandler = Handler()
@@ -46,23 +44,12 @@ class SplashActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
         }
-
         updateHandler.postDelayed(runnable, 1000)
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id) {
-
-        }
-    }
-
     fun setUpAnimation() {
-
         exclamation_view.setAnimation(R.raw.lottie_animation)
         exclamation_view.repeatCount = LottieDrawable.INFINITE
         exclamation_view.playAnimation()
-
-
-
     }
 }

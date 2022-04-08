@@ -13,9 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbhishekMeditationApp" >
         <activity
-            android:name=".Authentication"
-            android:exported="false" />
-        <activity
             android:name=".MeditationActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
