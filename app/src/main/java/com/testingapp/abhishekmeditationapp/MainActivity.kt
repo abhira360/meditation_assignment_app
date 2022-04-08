@@ -3,17 +3,12 @@ package com.testingapp.abhishekmeditationapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    private lateinit var  viewModel: MeditationViewModel
-    lateinit var firestore: FirebaseFirestore
     var userId : String? = null
 
 
@@ -29,29 +24,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         userId = intent.getStringExtra("userId")
 
-
-
-        viewModel = this?.run {
-            ViewModelProviders.of(this)[MeditationViewModel::class.java]
-        }
-
-
-        setupFireStore()
     }
 
-    fun setupFireStore() {
-
-        val db = FirebaseFirestore.getInstance()
-        val user = db.collection("meditation").document("focus")
-
-        user.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val doc = task.result
-                val img_url = doc["image"] as String?
-            }
-        }
-
-    }
 
     override fun onClick(v: View?) {
         when(v?.id) {
@@ -59,8 +33,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.cd_meditation -> {
 
                 val meditationActivity = Intent(this, MeditationActivity::class.java)
-//                intent.putExtra("image","https://firebasestorage.googleapis.com/v0/b/blissful-ly.appspot.com/o/image%2Fphoto-1463704131914-97e5aaa0e339.jpeg?alt=media&token=65bfca8d-afe9-47f9-8dba-40250f54f118")
-//                intent.putExtra("music", "https://firebasestorage.googleapis.com/v0/b/blissful-ly.appspot.com/o/audio%2FAcceptance.mp3?alt=media&token=7ff1a857-24db-4483-9f45-65b398274799")
+                meditationActivity.putExtra("doc", "focus")
+                meditationActivity.putExtra("sub_collection_doc","y36OYfQ0dCW0XCfwrs1e" )
                 startActivity(meditationActivity)
 
             }
@@ -68,16 +42,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.cd_calm_down -> {
 
                 val meditationActivity = Intent(this, MeditationActivity::class.java)
+                meditationActivity.putExtra("doc", "calm_down")
+                meditationActivity.putExtra("sub_collection_doc","xQf14Gr2r6HNmwp0ZGZL" )
                 startActivity(meditationActivity)
 
             }
             R.id.cd_destress -> {
                 val meditationActivity = Intent(this, MeditationActivity::class.java)
+                meditationActivity.putExtra("doc", "destress")
+                meditationActivity.putExtra("sub_collection_doc","fgMpR4Y1ZTsr7RnaUf6p" )
                 startActivity(meditationActivity)
 
             }
             R.id.cd_relax -> {
                 val meditationActivity = Intent(this, MeditationActivity::class.java)
+                meditationActivity.putExtra("doc", "relax")
+                meditationActivity.putExtra("sub_collection_doc","ABDc11SDUaNvymUKgveo" )
                 startActivity(meditationActivity)
 
             }

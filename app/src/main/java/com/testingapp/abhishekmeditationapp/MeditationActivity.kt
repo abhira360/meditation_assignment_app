@@ -15,38 +15,31 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_meditation.*
 
 
 class MeditationActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MeditationViewModel
-
     private lateinit var simpleExoplayer: SimpleExoPlayer
     private var playbackPosition: Long = 0
-    private var dashUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-    private val urlList = listOf(dashUrl to "dash")
-    var imageUrl = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fmobile.twitter.com%2Fgoogle&psig=AOvVaw1GNmkJ2-gcHLynJe7XsnZz&ust=1649491632270000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCLi-gKiBhPcCFQAAAAAdAAAAABAD"
+    private var dashUrl = ""
     private val dataSourceFactory: com.google.android.exoplayer2.upstream.DataSource.Factory by lazy {
         DefaultDataSourceFactory(this, "exoplayer-sample")
     }
+    var folder = ""
+    var id = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_meditation)
-        viewModel = this?.run {
-            ViewModelProviders.of(this)[MeditationViewModel::class.java]
-        }
-//        viewModel.imageLink.value = "https://firebasestorage.googleapis.com/v0/b/blissful-ly.appspot.com/o/image%2Fphoto-1463704131914-97e5aaa0e339.jpeg?alt=media&token=65bfca8d-afe9-47f9-8dba-40250f54f118"
-//        viewModel.musicLink.value = "https://firebasestorage.googleapis.com/v0/b/blissful-ly.appspot.com/o/audio%2FAcceptance.mp3?alt=media&token=7ff1a857-24db-4483-9f45-65b398274799"
 
-
-
-//        imageUrl = viewModel.imageLink.value
-        loadImage()
+        folder = intent.getStringExtra("doc")!!
+        id = intent.getStringExtra("sub_collection_doc")!!
         simpleExoplayer = SimpleExoPlayer.Builder(this).build()
-
         simpleExoplayer!!.addListener(object : Player.Listener { // player listener
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -69,21 +62,30 @@ class MeditationActivity : AppCompatActivity() {
             }
         })
 
-
+        setupFireStore()
     }
 
-    fun loadImage() {
-        Picasso.get().load(imageUrl).into(iv_image)
-        iv_image.setScaleType(ImageView.ScaleType.FIT_CENTER)
-    }
+    fun setupFireStore() {
 
-    fun playMusic() {
+        val db = FirebaseFirestore.getInstance()
+        val user = db.collection("meditation").document(folder).collection("session").document(id)
 
+        user.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val doc = task.result
+                Picasso.get().load(doc.get("imageLink").toString()).into(iv_image)
+                iv_image.setScaleType(ImageView.ScaleType.FIT_CENTER)
+
+                dashUrl = doc.get("link").toString()
+                initializePlayer()
+            }
+        }
     }
 
     private fun initializePlayer() {
-        val randomUrl = urlList.random()
-        preparePlayer(randomUrl.first, randomUrl.second)
+        val uri = Uri.parse(dashUrl)
+        val mediaSource = buildMediaSource(uri, "dash")
+        simpleExoplayer.prepare(mediaSource)
         exoplayerView.player = simpleExoplayer
         simpleExoplayer.seekTo(playbackPosition)
         simpleExoplayer.playWhenReady = true
@@ -95,25 +97,16 @@ class MeditationActivity : AppCompatActivity() {
 
     }
 
-    private fun preparePlayer(videoUrl: String, type: String) {
-        val uri = Uri.parse(videoUrl)
-        val mediaSource = buildMediaSource(uri, type)
-        simpleExoplayer.prepare(mediaSource)
-    }
-
     private fun releasePlayer() {
         playbackPosition = simpleExoplayer.currentPosition
         simpleExoplayer.release()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        initializePlayer()
     }
 
     override fun onStop() {
         super.onStop()
         releasePlayer()
     }
+
+
 
 }
