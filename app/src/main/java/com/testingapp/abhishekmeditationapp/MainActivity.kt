@@ -3,15 +3,17 @@ package com.testingapp.abhishekmeditationapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var  viewModel: MeditationViewModel
- //   lateinit var firestore: FirebaseFirestore
+    lateinit var firestore: FirebaseFirestore
     var userId : String? = null
 
 
@@ -34,23 +36,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 
 
-  //      setupFireStore()
+        setupFireStore()
     }
 
-//    fun setupFireStore() {
-//
-//        firestore = FirebaseFirestore.getInstance()
-//        val collectionReference = firestore.collection("meditation")
-//        collectionReference.addSnapshotListener { value, error ->
-//            if (value == null || error != null) {
-//                Toast.makeText(this,"Problem in fetching data", Toast.LENGTH_SHORT).show()
-//                return@addSnapshotListener
-//            }
-////            Log.d("Data",value.toObjects(MeditationData::class.java).toString())
-//
-//        }
-//
-//    }
+    fun setupFireStore() {
+
+        val db = FirebaseFirestore.getInstance()
+        val user = db.collection("meditation").document("focus")
+
+        user.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val doc = task.result
+                val img_url = doc["image"] as String?
+            }
+        }
+
+    }
 
     override fun onClick(v: View?) {
         when(v?.id) {

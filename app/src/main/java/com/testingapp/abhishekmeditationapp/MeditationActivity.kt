@@ -73,7 +73,7 @@ class MeditationActivity : AppCompatActivity() {
     }
 
     fun loadImage() {
-        Picasso.get().load(imageUrl)
+        Picasso.get().load(imageUrl).into(iv_image)
         iv_image.setScaleType(ImageView.ScaleType.FIT_CENTER)
     }
 
